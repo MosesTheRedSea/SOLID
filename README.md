@@ -1,4 +1,6 @@
-# SOLID | Spatial Object Learning & Integrated Dimensions
+# SOLID 
+
+Spatial Object Learning & Integrated Dimensions
 
 Multi-Modal Object Classification (RGB + Depth + Geometry)
 
