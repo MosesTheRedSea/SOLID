@@ -53,4 +53,4 @@ Spatial Object Learning & Integrated Dimensions
 
 ### Contact 
 
-For any issues or inquiries, please open an issue or contact **[Moses Adewolu]()** at **mosesoluwatobiadewolu@gmail.com**.
+For any issues or inquiries, please open an issue or contact **[Moses Adewolu]()** at **mosesoluwatobiadewolu@gmail.com**
