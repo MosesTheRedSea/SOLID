@@ -4,6 +4,7 @@ Spatial Object Learning & Integrated Dimensions
 - Multi-Modal Object Classification (RGB + Depth + Geometry), Combine visual appearance with 3D shape information. Novel fusion architectures for RGB-D classification
   
 ## Table of Contents
+- [Proposal](#proposal)
 - [Introduction](#introduction)
 - [Problem](#problem)
 - [Motivation](#motivation)
@@ -11,7 +12,7 @@ Spatial Object Learning & Integrated Dimensions
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Unitree-Robot](#Unitree-Robot)
+- [Unitree-Robot](#unitree-robot)
 - [Training the Model](#training-the-model)
 - [Running Inference](#running-inference)
 - [Dataset](#dataset)
@@ -19,6 +20,8 @@ Spatial Object Learning & Integrated Dimensions
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
+
+### Proposal
 
 ### Introduction
 
