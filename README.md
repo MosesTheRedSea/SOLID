@@ -1,5 +1,7 @@
 # SOLID Vision  
 
+[LogoFarmer Studio](https://dribbble.com/shots/25590129-S-Eye-Logo-Design)
+
 ![solid-vision-logo](https://github.com/MosesTheRedSea/SOLID/blob/main/solid-vision-design.jpg)
 
 **Spatial Object Learning & Integrated Dimensions**
