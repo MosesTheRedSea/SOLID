@@ -118,9 +118,4 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact
 
 For questions or inquiries, feel free to open an issue or contact:
-
-**Moses Adewolu**  
 Email: [mosesoluwatobiadewolu@gmail.com](mailto:mosesoluwatobiadewolu@gmail.com)  
-GitHub: [@your-github-username](https://github.com/your-github-username) *(replace with actual handle)*  
-LinkedIn: [Your LinkedIn](https://www.linkedin.com/) *(optional)*
-
