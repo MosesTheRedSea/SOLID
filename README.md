@@ -1,10 +1,10 @@
-# SOLID Vision  
+# SOLID 
 
 [LogoFarmer Studio](https://dribbble.com/shots/25590129-S-Eye-Logo-Design)
 
 ![solid-vision-logo](https://github.com/MosesTheRedSea/SOLID/blob/main/solid-vision-design.jpg)
 
-**Spatial Object Learning & Integrated Dimensions**
+**Spatial Object Learning & Integrated Dimensions Vision**
 - A Multi-Modal Object Classification framework fusing **RGB**, **Depth**, and **3D Geometry** — enabling robust recognition in complex real-world environments.
 
 ## Highlights
