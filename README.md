@@ -4,7 +4,7 @@
 
 ![solid-vision-logo](https://github.com/MosesTheRedSea/SOLID/blob/main/solid-vision-design.jpg)
 
-### Introduction:
+## Introduction
 
 **Spatial Object Learning & Integrated Dimensions Vision (SOLID Vision)** is a multi-modal object classification framework that fuses RGB images, depth maps, and 3D geometry to achieve robust recognition in complex real-world environments.
 
