@@ -4,48 +4,121 @@
 
 ![solid-vision-logo](https://github.com/MosesTheRedSea/SOLID/blob/main/solid-vision-design.jpg)
 
+<br />
+<p align="center">
+  <h3 align="center">Spatial Object Learning Integrated Dimensions</h3>
+  <p align="center">
+    <a href="https://github.com/catiaspsilva/README-template/blob/main/images/docs.txt"><strong>Documentaton</strong></a>
+    <a href="https://github.com/catiaspsilva/README-template/issues">Report Bug</a>
+    <a href="https://github.com/catiaspsilva/README-template/issues">Add New Feature</a>
+  </p>
+</p>
+
+<!-- ABOUT THE PROJECT -->
 ## Introduction
 
-**Spatial Object Learning & Integrated Dimensions Vision (SOLID Vision)** is a multi-modal object classification framework that fuses RGB images, depth maps, and 3D geometry to achieve robust recognition in complex real-world environments.
+- MNISTique V1 is a neural network project built for handwritten digit classification using the MNIST dataset. Designed as an educational and practical exploration of deep learning fundamentals, the project demonstrates how a feedforward neural network can effectively learn to identify digits (0–9) from grayscale 28x28 pixel images.
 
-Traditional models relying solely on RGB data lack spatial awareness, limiting their applicability in robotics and autonomy. They face key limitations such as:
+[Here goes the title with hyperlink](https://github.com/catiaspsilva/README-template)
 
-- **No 3D Spatial Reasoning:** RGB-only models lack depth and geometric context.
-- **Environmental Sensitivity:** Performance degrades under occlusions, poor lighting, or partial views.
-- **Incomplete Representations:** Single modalities fail to capture real-world object complexity.
+You can include tables or images to summarize your results when and if appropriate.
 
-SOLID Vision bridges these gaps with transformer-based cross-modal architectures, enabling accurate spatial understanding, robustness under challenging conditions, and high performance across robotics and autonomous perception use cases.
+<!-- GETTING STARTED -->
+## Getting Started
 
-## Key Highlights
+In this section you should provide instructions on how to use this repository to recreate your project locally.
 
-- Multi-modal fusion of RGB, depth, and 3D geometric data
-- Transformer-based architecture with cross-modal attention
-- Built with PyTorch, PointNet++, ResNet, and Vision Transformers (ViT)
-- Optimized for real-time robotics, AR/VR, and autonomous perception
+```
+├── templates/                    # Templates and guidelines
+│   ├── basic_ml_design_doc.md   # Basic template for ML design docs
+│   └── design_doc_checklist.md  # Review checklist for design docs
+├── Design_Doc_Examples/         # Example design documents
+│   ├── EN/                      # English examples
+│   └── [other languages]/       # Examples in other languages
+├── BookOutline.md              # Book chapter summaries and key concepts
+├── CONTRIBUTING.md             # Contribution guidelines
+└── README.md                   # This file
+```
 
-## System Overview
+### Dependencies
 
-### Data Modalities
+Here, list all libraries, packages and other dependencies that need to be installed to run your project. Include library versions and how they should be installed if a special requirement is needed.
 
-- **RGB Images:** Capture color, texture, and fine-grained features (ResNet/ViT backbones).
-- **Depth Maps:** Provide spatial cues via normalized depth channels processed with CNN-based encoders.
-- **3D Geometry:** Point clouds or voxel grids processed using PointNet++, volumetric CNNs, or graph-based models.
+For example, this is how you would list them:
+* Transformers 4.8.0
+  ```sh
+  conda install -c conda-forge transformers
+  ```
+* OpenCV 4.5.2
+  ```sh
+  conda install -c conda-forge opencv
+  ```
+### Alternative: Export your Environment
 
-### Fusion Strategies
+Alternatively, you can export your Python working environment, push it to your project's repository and allow users to clone it locally. This way, anyone can install it and they will have all dependencies needed. Here is how you export a copy of your Python environment:
 
-- **Early Fusion:** Combine raw inputs before feature extraction.
-- **Late Fusion:** Merge modality features after independent encoding.
-- **Cross-Attention Fusion:** Transformer-based modules to learn shared multi-modal representations.
+  ```sh
+  conda env export > requirements.yml
+  ```
 
-## Features
+The user will be able to recreate it using:
 
-- Multi-modal integration: RGB, depth, and geometry fusion
-- Flexible architectures: Early, late, and attention-based fusion options
-- Modular design: Easy extension to new modalities or tasks
-- Benchmark compatibility: Supports ModelNet40, SUN RGB-D, and more
-- Visualization tools: t-SNE plots, attention maps, and prediction visualizations
-- Robotics deployment: Integrated with Unitree Robotics for real-world testing
-- PyTorch implementation: Fully open-source and customizable
+  ```sh
+  conda env create -f requirements.yml
+  ```
 
-For questions or inquiries, feel free to open an issue or contact:
-Email: [mosesoluwatobiadewolu@gmail.com](mailto:mosesoluwatobiadewolu@gmail.com)  
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/catiaspsilva/README-template.git
+   ```
+2. Setup (and activate) your environment
+  ```sh
+  conda env create -f requirements.yml
+  ```
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+Use this space to show useful examples of how a project can be used. For course projects, include which file to execute and the format of any input variables.
+
+Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+
+_For more examples, please refer to the [Documentation](https://example.com)_
+
+<!-- ROADMAP -->
+## Roadmap
+
+See the [open issues](https://github.com/catiaspsilva/README-template/issues) for a list of proposed features (and known issues).
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+
+<!-- Authors -->
+## Authors
+Moses Adewolu - [@MosesTheRedSea](https://twitter.com/MosesTheRedSea) [mosesoluwatobiadewolu@gmail.com](mosesoluwatobiadewolu@gmail.com)
+
+Project Link: [https://github.com/MosesTheRedSea/MNISTique.git](https://github.com/MosesTheRedSea/MNISTique.git)
+
+
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+
+You can acknowledge any individual, group, institution or service.
+* [Catia Silva](https://faculty.eng.ufl.edu/catia-silva/)
