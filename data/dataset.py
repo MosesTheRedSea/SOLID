@@ -1,11 +1,12 @@
 import os
 import sys
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/")
+
+sys.path.extend([
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/",    
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/", 
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/"])
+
 import shutil
 import torch
 from tqdm import tqdm

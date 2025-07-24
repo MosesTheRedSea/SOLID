@@ -76,6 +76,7 @@ def train(cfg):
     for epoch in range(1, cfg.training.epochs + 1):
         print(f"\nEpoch {epoch}/{cfg.training.epochs}")
         model.train()
+        
         running_loss = running_correct = running_total = 0
         for xyz, labels in tqdm(train_loader, desc="Train"):
             xyz, labels = xyz.to(device), labels.to(device).squeeze()
