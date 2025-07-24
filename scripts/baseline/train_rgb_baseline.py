@@ -1,10 +1,12 @@
 import os
 import sys
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/")
+
+sys.path.extend([
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/"])
+
 import glob
 import torch
 import torch.nn as nn
@@ -16,10 +18,11 @@ from tqdm import tqdm
 from sklearn.metrics import precision_score, recall_score, confusion_matrix
 from constants import *
 from dataset import SUNRGBDDataset
-from baseline.ResNet18 import ResNet18
+
+from baseline.rgb.ResNet18 import ResNet18
 from torchvision.models import ResNet18_Weights
 
-class RGBOnlyDataset(Dataset):
+class GrabRGBData(Dataset):
     def __init__(self, base_ds):
         self.base = base_ds
     def __len__(self):
@@ -61,6 +64,7 @@ def train_baseline(cfg):
         transform_rgb=transform_rgb,
         transform_depth=None, transform_points=None
     )
+
     val_base = SUNRGBDDataset(
         data_root=cfg.data.root,
         toolbox_root=cfg.data.toolbox_root,
@@ -71,8 +75,8 @@ def train_baseline(cfg):
     )
 
     # Wrap to only RGB
-    train_ds = RGBOnlyDataset(train_base)
-    val_ds  = RGBOnlyDataset(val_base)
+    train_ds = GrabRGBData(train_base)
+    val_ds  = GrabRGBData(val_base)
 
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     val_loader = DataLoader(val_ds,   batch_size=batch_size, shuffle=False, num_workers=num_workers)
@@ -96,6 +100,7 @@ def train_baseline(cfg):
         glob.glob(os.path.join(ckpt_dir, "rgb_baseline_*.pth")),
         key=lambda p: int(os.path.splitext(p)[0].split("rgb_baseline_")[-1])
     )
+
     if ckpt_paths:
         latest = ckpt_paths[-1]
         print(f"Resuming from {latest}")

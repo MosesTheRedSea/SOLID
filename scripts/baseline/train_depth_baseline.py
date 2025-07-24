@@ -1,10 +1,12 @@
 import os
 import sys
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data")
-sys.path.append("/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/")
+
+sys.path.extend([
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/"])
+
 import glob
 import torch
 import torch.nn as nn
@@ -16,10 +18,11 @@ from tqdm import tqdm
 from sklearn.metrics import precision_score, recall_score, confusion_matrix
 from constants import *
 from dataset import SUNRGBDDataset
-from baseline.ResNet18 import ResNet18
+
+from baseline.depth.ResNet18 import ResNet18
 from torchvision.models import ResNet18_Weights
 
-class DepthOnlyDataset(Dataset):
+class GrabDepthData(Dataset):
     def __init__(self, base_ds):
         self.base = base_ds
     def __len__(self):
@@ -27,3 +30,164 @@ class DepthOnlyDataset(Dataset):
     def __getitem__(self, idx):
         _, depth, _, label = self.base[idx]
         return depth, label
+
+def train_depth(cfg):
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Configs
+    epochs      = cfg.training.epochs
+    batch_size  = cfg.training.batch_size
+    lr          = cfg.training.lr
+    num_workers = cfg.training.num_workers
+    pretrained  = cfg.training.pretrained
+
+    # Paths
+    ckpt_dir = cfg.modalities.depth.checkpoint_dir
+    log_path = cfg.modalities.depth.logging.result_file
+
+    # Transforms
+    resize = tuple(cfg.modalities.depth.transforms.resize)
+    transform_depth = transforms.Compose([
+        lambda x: Image.fromarray(x),  # if raw depth is np.array
+        transforms.Resize(resize),
+        transforms.ToTensor()
+        # Add normalization here if needed
+    ])
+
+    # Base datasets
+    train_base = SUNRGBDDataset(
+        data_root=cfg.data.root,
+        toolbox_root=cfg.data.toolbox_root,
+        split='train',
+        num_points=cfg.modalities.pointcloud.num_points,
+        transform_rgb=None,
+        transform_depth=transform_depth,
+        transform_points=None
+    )
+    
+    val_base = SUNRGBDDataset(
+        data_root=cfg.data.root,
+        toolbox_root=cfg.data.toolbox_root,
+        split='test',
+        num_points=cfg.modalities.pointcloud.num_points,
+        transform_rgb=None,
+        transform_depth=transform_depth,
+        transform_points=None
+    )
+
+    # Wrap to depth-only
+    train_ds = GrabDepthData(train_base)
+    val_ds   = GrabDepthData(val_base)
+
+    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    val_loader   = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+
+    # Model
+    num_classes = cfg.modalities.depth.model.num_classes
+    model = ResNet18(num_classes=num_classes, pretrained=pretrained, in_channels=1).to(device)
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    loss_fn = nn.CrossEntropyLoss()
+
+    os.makedirs(ckpt_dir, exist_ok=True)
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
+    # Resume if exists
+    ckpt_paths = sorted(
+        glob.glob(os.path.join(ckpt_dir, "depth_baseline_*.pth")),
+        key=lambda p: int(os.path.splitext(p)[0].split("depth_baseline_")[-1])
+    )
+    if ckpt_paths:
+        latest = ckpt_paths[-1]
+        print(f"Resuming from {latest}")
+        ckpt = torch.load(latest, map_location=device)
+        model.load_state_dict(ckpt['model_state_dict'])
+        optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+        start_epoch = ckpt['epoch'] + 1
+        best_val_acc = ckpt.get('val_accuracy', 0.0)
+    else:
+        print("No checkpoint found, starting from scratch")
+        start_epoch = 1
+        best_val_acc = 0.0
+
+    with open(log_path, "w") as f:
+        f.write("epoch,train_loss,train_acc,val_loss,val_acc,val_precision,val_recall\n")
+
+    # Training loop
+    for epoch in range(start_epoch, epochs + 1):
+        model.train()
+        running_loss = running_correct = running_total = 0
+        for depth, labels in tqdm(train_loader, desc=f"Epoch {epoch} - Train"):
+            depth, labels = depth.to(device), labels.to(device)
+            optimizer.zero_grad()
+            out = model(depth)
+            loss = loss_fn(out, labels)
+            loss.backward()
+            optimizer.step()
+
+            preds = out.argmax(dim=1)
+            running_loss += loss.item() * labels.size(0)
+            running_correct += (preds == labels).sum().item()
+            running_total += labels.size(0)
+
+        train_loss = running_loss / running_total
+        train_acc  = running_correct / running_total
+        print(f"[Train] Loss: {train_loss:.4f} Acc: {train_acc:.4f}")
+
+        # Validation
+        model.eval()
+        val_loss = val_correct = val_total = 0
+        all_preds, all_labels = [], []
+        with torch.no_grad():
+            for depth, labels in tqdm(val_loader, desc=f"Epoch {epoch} - Val"):
+                depth, labels = depth.to(device), labels.to(device)
+                out = model(depth)
+                loss = loss_fn(out, labels)
+                preds = out.argmax(dim=1)
+
+                val_loss += loss.item() * labels.size(0)
+                val_correct += (preds == labels).sum().item()
+                val_total += labels.size(0)
+
+                all_preds.append(preds.cpu())
+                all_labels.append(labels.cpu())
+
+        val_loss = val_loss / val_total
+        val_acc = val_correct / val_total
+        y_pred = torch.cat(all_preds).numpy()
+        y_true = torch.cat(all_labels).numpy()
+        val_precision = precision_score(y_true, y_pred, average='macro', zero_division=0)
+        val_recall = recall_score(y_true, y_pred, average='macro', zero_division=0)
+        conf_matrix = confusion_matrix(y_true, y_pred)
+
+        print(f"[Val] Loss: {val_loss:.4f} Acc: {val_acc:.4f}")
+        print(f"[Val] Precision: {val_precision:.4f}, Recall: {val_recall:.4f}")
+        print(conf_matrix)
+
+        # Save checkpoint
+        ckpt = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'train_loss': train_loss,
+            'train_accuracy': train_acc,
+            'val_loss': val_loss,
+            'val_accuracy': val_acc,
+            'val_precision': val_precision,
+            'val_recall': val_recall,
+            'val_confusion_matrix': conf_matrix.tolist(),
+        }
+        torch.save(ckpt, os.path.join(ckpt_dir, f"depth_baseline_{epoch}.pth"))
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+            torch.save(model.state_dict(), os.path.join(ckpt_dir, "best_depth_baseline.pth"))
+
+        with open(log_path, "a") as f:
+            f.write(f"{epoch},{train_loss:.4f},{train_acc:.4f},{val_loss:.4f},{val_acc:.4f},{val_precision:.4f},{val_recall:.4f}\n")
+
+if __name__ == "__main__":
+    cfg = OmegaConf.load(os.path.join(PROJECT_ROOT, "configs/baseline/train_config.yaml"))
+    train_depth(cfg)

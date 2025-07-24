@@ -33,6 +33,7 @@ class SUNRGBDDataset(Dataset):
 
         print(f"[{split.upper()}] Loading metadata...")
         mat = sio.loadmat(SUNRGBD_3DBB_MAT, squeeze_me=True, struct_as_record=False)
+
         self.meta = mat['SUNRGBDMeta']
         print(f"→ {len(self.meta)} total samples in dataset")
 
@@ -131,24 +132,28 @@ class SUNRGBDDataset(Dataset):
         if isinstance(raw, np.ndarray):
             raw = raw[0]
         label = torch.tensor(self.class_to_idx[raw], dtype=torch.long)
-
         scene_type = getattr(sample, 'sceneType', 'unknown')
-
         return rgb_image, depth_tensor, pcl, label, scene_type
 
     def _depth_to_point_cloud(self, depth, rgb, fx, fy, cx, cy):
+        
         H, W = depth.shape
+
         rgb_np = np.array(rgb) / 255.0
         us, vs = np.meshgrid(np.arange(W), np.arange(H))
         zs = depth.flatten()
+
         mask = (zs > 0) & (zs < 8.0)
         u = us.flatten()[mask]
         v = vs.flatten()[mask]
         z = zs[mask]
+
         x = (u - cx) * z / fx
         y = (v - cy) * z / fy
+
         pts = np.stack([x, y, z], axis=1)
         cols = rgb_np[v, u]
+
         return pts, cols
 
 if __name__ == "__main__":
@@ -208,7 +213,6 @@ if __name__ == "__main__":
     else:
         print("\n All test classes are present in the training set.")
     
-
     loader = DataLoader(train_ds, batch_size=4, shuffle=True, num_workers=4)
     for i, (rgb, depth, pcl, label, scene_type) in enumerate(loader):
         print(f"Batch {i+1}: RGB {rgb.shape}, Depth {depth.shape}, PCL {pcl.shape}, Labels {label.shape}")
