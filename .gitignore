@@ -2,3 +2,4 @@ __pycache__/
 data/sunrgbd/
 .venv/
 uv.lock
+*.out

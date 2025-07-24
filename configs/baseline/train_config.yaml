@@ -38,6 +38,10 @@ modalities:
       resize: [224, 224]
       normalize_mean: [0.485, 0.456, 0.406]
       normalize_std:  [0.229, 0.224, 0.225]
+    
+    checkpoint_dir: "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/checkpoints/baseline/rgb/"
+    logging:
+      result_file: "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/results/baseline/rgb_results.txt"
 
   depth:
     model:
@@ -50,9 +54,11 @@ modalities:
       scale:  0.001        
 
   pointcloud:
+    num_points: 1024
     model:
       type: dgcnn
       pretrained: true
       num_classes: 428
     transforms:
-      num_points: 1024
+      scale: 0.001
+      
