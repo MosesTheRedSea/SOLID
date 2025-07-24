@@ -157,7 +157,7 @@ class SUNRGBDDataset(Dataset):
         return pts, cols
 
 if __name__ == "__main__":
-    SUNRGBD_DATA_ROOT    = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBD"
+    SUNRGBD_DATA_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBD"
     SUNRGBD_TOOLBOX_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBDtoolbox"
 
     for p in (SUNRGBD_DATA_ROOT, SUNRGBD_TOOLBOX_ROOT):
