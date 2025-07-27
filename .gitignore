@@ -3,3 +3,5 @@ data/sunrgbd/
 .venv/
 uv.lock
 *.out
+*.pth
+*.txt

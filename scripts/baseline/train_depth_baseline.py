@@ -5,7 +5,8 @@ sys.path.extend([
     "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/",
     "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/",
     "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/configs/baseline/",
-    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/"])
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/scripts/"
+])
 
 import glob
 import torch
@@ -15,91 +16,141 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from tqdm import tqdm
+from PIL import Image
+import numpy as np
 from sklearn.metrics import precision_score, recall_score, confusion_matrix
-from constants import *
-from dataset import SUNRGBDDataset
 
-from baseline.depth.ResNet18 import ResNet18
-from torchvision.models import ResNet18_Weights
+from constants import *
+from depthdata import SUNRGBDDataset
+from baseline.depth.ResNet34 import ResNet34 
+from torchvision.models import ResNet34_Weights
 
 class GrabDepthData(Dataset):
-    def __init__(self, base_ds):
+    def __init__(self, base_ds, transform=None):
+        self.transform = transform
+        self.class_to_idx = base_ds.class_to_idx
+        self.classes = base_ds.classes
+
+        # Pre-filter valid indices
+        self.valid_samples = []
+        for i in range(len(base_ds)):
+            try:
+                depth_tensor, label = base_ds[i]
+                if depth_tensor is None:
+                    continue
+                if isinstance(depth_tensor, torch.Tensor):
+                    depth_np = depth_tensor.squeeze().cpu().numpy()
+                else:
+                    depth_np = depth_tensor
+                if depth_np.ndim == 3:
+                    depth_np = depth_np.squeeze()
+                depth_np = (depth_np * 255.0).astype(np.uint8)
+                _ = Image.fromarray(depth_np).convert("L")
+                self.valid_samples.append(i)
+            except Exception as e:
+                print(f"[SKIP] Sample {i} invalid: {e}")
+                continue
         self.base = base_ds
+        print(f"[INFO] Using {len(self.valid_samples)} valid samples from {len(base_ds)} total")
+
     def __len__(self):
-        return len(self.base)
+        return len(self.valid_samples)
+
     def __getitem__(self, idx):
-        _, depth, _, label = self.base[idx]
-        return depth, label
+        base_idx = self.valid_samples[idx]
+        depth_tensor, label = self.base[base_idx]
+        if isinstance(depth_tensor, torch.Tensor):
+            depth_np = depth_tensor.squeeze().cpu().numpy()
+        else:
+            depth_np = depth_tensor
+        if depth_np.ndim == 3:
+            depth_np = depth_np.squeeze()
+        depth_np = (depth_np * 255.0).astype(np.uint8)
+        depth_img = Image.fromarray(depth_np).convert("L")
+        if self.transform:
+            depth_img = self.transform(depth_img)
+        return depth_img, label
 
 def train_depth(cfg):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Configs
     epochs      = cfg.training.epochs
     batch_size  = cfg.training.batch_size
     lr          = cfg.training.lr
     num_workers = cfg.training.num_workers
-    pretrained  = cfg.training.pretrained
 
-    # Paths
-    ckpt_dir = cfg.modalities.depth.checkpoint_dir
-    log_path = cfg.modalities.depth.logging.result_file
+    depth_cfg = cfg.modalities.depth
+    ckpt_dir = depth_cfg.checkpoint_dir
+    log_path = depth_cfg.logging.result_file
 
-    # Transforms
-    resize = tuple(cfg.modalities.depth.transforms.resize)
+    resize = tuple(depth_cfg.transforms.resize)
+    scale = depth_cfg.transforms.scale
+
     transform_depth = transforms.Compose([
-        lambda x: Image.fromarray(x),  # if raw depth is np.array
         transforms.Resize(resize),
-        transforms.ToTensor()
-        # Add normalization here if needed
+        transforms.ToTensor(),
+        transforms.Lambda(lambda x: x * scale),
     ])
 
-    # Base datasets
-    train_base = SUNRGBDDataset(
-        data_root=cfg.data.root,
-        toolbox_root=cfg.data.toolbox_root,
-        split='train',
-        num_points=cfg.modalities.pointcloud.num_points,
-        transform_rgb=None,
-        transform_depth=transform_depth,
-        transform_points=None
-    )
-    
-    val_base = SUNRGBDDataset(
-        data_root=cfg.data.root,
-        toolbox_root=cfg.data.toolbox_root,
-        split='test',
-        num_points=cfg.modalities.pointcloud.num_points,
-        transform_rgb=None,
-        transform_depth=transform_depth,
-        transform_points=None
+    # Align training and test classes
+    full_train = SUNRGBDDataset(
+        cfg.data.root, split='train',
+        transform_depth=None
     )
 
-    # Wrap to depth-only
-    train_ds = GrabDepthData(train_base)
-    val_ds   = GrabDepthData(val_base)
+    full_val = SUNRGBDDataset(
+        cfg.data.root, split='test',
+        transform_depth=None
+    )
+
+    common_classes = sorted(set(full_train.classes) & set(full_val.classes))
+    print(f"Using {len(common_classes)} common classes between train and test")
+
+    train_base = SUNRGBDDataset(
+        cfg.data.root, split='train',
+        transform_depth=None,
+        allowed_classes=common_classes
+    )
+
+    val_base = SUNRGBDDataset(
+        cfg.data.root, split='test',
+        transform_depth=None,
+        allowed_classes=common_classes
+    )
+
+    val_base.class_to_idx = train_base.class_to_idx
+    val_base.classes = train_base.classes
+
+    train_ds = GrabDepthData(train_base, transform=transform_depth)
+    val_ds = GrabDepthData(val_base, transform=transform_depth)
 
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-    val_loader   = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
-    # Model
-    num_classes = cfg.modalities.depth.model.num_classes
-    model = ResNet18(num_classes=num_classes, pretrained=pretrained, in_channels=1).to(device)
+    num_classes = len(train_base.classes)
+    model = ResNet34(
+        num_classes=num_classes,
+        in_channels=1,
+        weights=ResNet34_Weights.IMAGENET1K_V1,
+        dropout_prob=0.5,
+        freeze_backbone=False
+    ).to(device)
+
     if torch.cuda.device_count() > 1:
         model = nn.DataParallel(model)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    loss_fn = nn.CrossEntropyLoss()
+    optimizer = Adam(model.parameters(), lr=lr)
+    loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)
 
     os.makedirs(ckpt_dir, exist_ok=True)
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    # Resume if exists
     ckpt_paths = sorted(
         glob.glob(os.path.join(ckpt_dir, "depth_baseline_*.pth")),
         key=lambda p: int(os.path.splitext(p)[0].split("depth_baseline_")[-1])
     )
+
     if ckpt_paths:
         latest = ckpt_paths[-1]
         print(f"Resuming from {latest}")
@@ -116,16 +167,17 @@ def train_depth(cfg):
     with open(log_path, "w") as f:
         f.write("epoch,train_loss,train_acc,val_loss,val_acc,val_precision,val_recall\n")
 
-    # Training loop
     for epoch in range(start_epoch, epochs + 1):
         model.train()
         running_loss = running_correct = running_total = 0
+
         for depth, labels in tqdm(train_loader, desc=f"Epoch {epoch} - Train"):
             depth, labels = depth.to(device), labels.to(device)
             optimizer.zero_grad()
             out = model(depth)
             loss = loss_fn(out, labels)
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
             optimizer.step()
 
             preds = out.argmax(dim=1)
@@ -134,13 +186,13 @@ def train_depth(cfg):
             running_total += labels.size(0)
 
         train_loss = running_loss / running_total
-        train_acc  = running_correct / running_total
+        train_acc = running_correct / running_total
         print(f"[Train] Loss: {train_loss:.4f} Acc: {train_acc:.4f}")
 
-        # Validation
         model.eval()
         val_loss = val_correct = val_total = 0
         all_preds, all_labels = [], []
+
         with torch.no_grad():
             for depth, labels in tqdm(val_loader, desc=f"Epoch {epoch} - Val"):
                 depth, labels = depth.to(device), labels.to(device)
@@ -188,6 +240,8 @@ def train_depth(cfg):
         with open(log_path, "a") as f:
             f.write(f"{epoch},{train_loss:.4f},{train_acc:.4f},{val_loss:.4f},{val_acc:.4f},{val_precision:.4f},{val_recall:.4f}\n")
 
+
 if __name__ == "__main__":
+    PROJECT_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID"
     cfg = OmegaConf.load(os.path.join(PROJECT_ROOT, "configs/baseline/train_config.yaml"))
     train_depth(cfg)

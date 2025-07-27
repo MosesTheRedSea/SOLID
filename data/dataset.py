@@ -166,11 +166,13 @@ if __name__ == "__main__":
             print(f"Error: '{p}' not found."); sys.exit(1)
 
     transform_rgb = transforms.Compose([
-        transforms.Resize((224,224)),
+        transforms.Resize((224,224)), 
+        transforms.RandomCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485,0.456,0.406],
-                             std =[0.229,0.224,0.225])
-    ])
+                            std =[0.229,0.224,0.225])])
 
     transform_depth = transforms.Compose([
         lambda x: Image.fromarray(x),
@@ -198,6 +200,10 @@ if __name__ == "__main__":
         transform_depth=transform_depth,
         allowed_classes=train_ds.classes
     )
+
+    assert train_ds.class_to_idx == test_ds.class_to_idx, \
+    "Label index mapping between train and test is different!"
+
 
     print(f"\nTraining set size: {len(train_ds)}")
     print(f"Test set size: {len(test_ds)}\n")

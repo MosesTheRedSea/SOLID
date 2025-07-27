@@ -31,7 +31,7 @@ training:
 modalities:
   rgb:
     model:
-      backbone: resnet18
+      backbone: resnet34
       pretrained: ${training.pretrained}
       num_classes: 45
     transforms:
@@ -45,7 +45,7 @@ modalities:
 
   depth:
     model:
-      backbone: resnet18
+      backbone: resnet34
       input_channels: 1
       pretrained: ${training.pretrained}
       num_classes: 45
@@ -60,14 +60,14 @@ modalities:
     num_points: 1024
     model:
       type: dgcnn
-      pretrained: true
+      pretrained: true  
       num_classes: 45
       emb_dims: 1024
       k: 20
       dropout: 0.5
     transforms:
       scale: 0.001
-    checkpoint_dir: "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/checkpoints/baseline/depth/"
+    checkpoint_dir: "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/checkpoints/baseline/cloud/"
     logging:
-      result_file: "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/results/baseline/depth_results.txt"
+      result_file: "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/results/baseline/cloud_results.txt"
       
