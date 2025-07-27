@@ -29,15 +29,40 @@ You can include tables or images to summarize your results when and if appropria
 In this section you should provide instructions on how to use this repository to recreate your project locally.
 
 ```
-├── templates/                    # Templates and guidelines
-│   ├── basic_ml_design_doc.md   # Basic template for ML design docs
-│   └── design_doc_checklist.md  # Review checklist for design docs
-├── Design_Doc_Examples/         # Example design documents
-│   ├── EN/                      # English examples
-│   └── [other languages]/       # Examples in other languages
-├── BookOutline.md              # Book chapter summaries and key concepts
-├── CONTRIBUTING.md             # Contribution guidelines
-└── README.md                   # This file
+SOLID/
+├── main.py
+├── README.md
+├── pyproject.toml
+├── solid_model_proposal.pdf
+├── solid_team_project_checkin.pdf
+├── notebooks/
+│   └── analysis.ipynb
+├── data/
+│   └── dataset.py
+├── scripts/
+│   └── multimodal/
+│       └── train_solid.py
+├── models/
+│   ├── multimodal/
+│   │   ├── rgb_encoder.py
+│   │   ├── depth_encoder.py
+│   │   ├── geometry_encoder.py
+│   │   ├── fusion.py
+│   │   ├── classifier.py
+│   │   └── solid_pipeline.py
+├── utils/
+│   ├── data_utils.py
+│   ├── training_utils.py
+│   ├── visualization.py
+│   └── model_utils.py
+├── outputs/
+│   ├── checkpoints/
+│   │   └── multimodal/
+│   ├── results/
+│   │   └── multimodal/
+│   └── logs/
+├── configs/
+│   └── multimodal/train_config.yaml
 ```
 
 ### Dependencies
