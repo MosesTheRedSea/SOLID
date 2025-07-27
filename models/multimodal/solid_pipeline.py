@@ -18,7 +18,6 @@ class SolidFusionPipeline(nn.Module):
         self.classifier = ClassificationHead(in_dim=512 * 3, num_classes=num_classes)
 
     def forward(self, rgb, depth, pcl):
-
         rgb_feat = self.rgb_encoder(rgb)       
         depth_feat = self.depth_encoder(depth) 
         geom_feat = self.geometry_encoder(pcl) 

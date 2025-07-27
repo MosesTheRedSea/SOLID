@@ -9,10 +9,18 @@ class DepthEncoder(nn.Module):
             "swin_tiny_patch4_window7_224",
             pretrained=True,
             in_chans=1,
-            features_only=False
+            num_classes=0  # disable classification head
         )
         self.fc = nn.Linear(self.backbone.num_features, out_dim)
 
     def forward(self, x):
-        features = self.backbone.forward_features(x)  
-        return self.fc(features)                     
+        features = self.backbone.forward_features(x)  # Shape: [B, H, W, C] -> [8, 7, 7, 768]
+        # The pooling logic needs to be corrected for channels-last format
+        if features.dim() == 4:
+            # FAULTY LINE:
+            # features = features.mean(dim=[2, 3])
+            # CORRECTED LINE: Average over H and W dims (1 and 2)
+            features = features.mean(dim=[1, 2])
+        elif features.dim() == 3:  # This handles (B, L, C) format, which is fine
+            features = features.mean(dim=1)
+        return self.fc(features)

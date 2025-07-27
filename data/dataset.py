@@ -120,7 +120,7 @@ class SUNRGBDDataset(Dataset):
             pad = self.num_points - pts.shape[0]
             pts = np.vstack([pts, np.zeros((pad, 3), dtype=np.float32)])
             cols = np.vstack([cols, np.zeros((pad, 3), dtype=np.float32)])
-        pcl = torch.from_numpy(np.hstack([pts, cols]).astype(np.float32))
+        pcl = torch.from_numpy(pts.astype(np.float32))
 
         if self.transform_rgb:
             rgb_image = self.transform_rgb(rgb_image)
