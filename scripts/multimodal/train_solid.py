@@ -1,4 +1,3 @@
-
 import os
 import sys
 import torch
@@ -8,30 +7,25 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score, f1_score
 import numpy as np
+from torchvision import transforms
 
-# Add paths for modules and data
 sys.path.extend([
     "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/multimodal/",
-    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/",
+    "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/"
 ])
 
 from solid_pipeline import SolidFusionPipeline
 from dataset import SUNRGBDDataset
 
-# === Configurations ===
 SUNRGBD_DATA_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBD"
 SUNRGBD_TOOLBOX_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBDtoolbox"
-NUM_CLASSES = 10
 BATCH_SIZE = 8
-EPOCHS = 20
+EPOCHS = 200
 LEARNING_RATE = 1e-4
-CHECKPOINT_PATH = "results/checkpoints/fusion_model.pt"
+CHECKPOINT_PATH = "outputs/checkpoints/multimodal/fusion_model.pt"
 
-# === Device ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# === Transforms ===
-from torchvision import transforms
 transform_rgb = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -43,7 +37,6 @@ transform_depth = transforms.Compose([
     transforms.ToTensor()
 ])
 
-# === Dataset ===
 train_dataset = SUNRGBDDataset(
     data_root=SUNRGBD_DATA_ROOT,
     toolbox_root=SUNRGBD_TOOLBOX_ROOT,
@@ -52,6 +45,8 @@ train_dataset = SUNRGBDDataset(
     transform_rgb=transform_rgb,
     transform_depth=transform_depth
 )
+
+NUM_CLASSES = len(train_dataset.classes)
 
 test_dataset = SUNRGBDDataset(
     data_root=SUNRGBD_DATA_ROOT,
@@ -66,14 +61,10 @@ test_dataset = SUNRGBDDataset(
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
-# === Model ===
 model = SolidFusionPipeline(num_classes=NUM_CLASSES).to(device)
-
-# === Optimizer & Loss ===
 optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 criterion = nn.CrossEntropyLoss()
 
-# === Training Loop ===
 best_acc = 0.0
 for epoch in range(EPOCHS):
     model.train()
@@ -99,7 +90,6 @@ for epoch in range(EPOCHS):
     train_f1 = f1_score(all_labels, all_preds, average='weighted')
     print(f"Train Loss: {np.mean(train_losses):.4f}, Accuracy: {train_acc:.4f}, F1: {train_f1:.4f}")
 
-    # === Evaluation ===
     model.eval()
     test_preds = []
     test_labels = []
@@ -117,7 +107,8 @@ for epoch in range(EPOCHS):
 
     if test_acc > best_acc:
         best_acc = test_acc
+        os.makedirs(os.path.dirname(CHECKPOINT_PATH), exist_ok=True)
         torch.save(model.state_dict(), CHECKPOINT_PATH)
-        print(f"✅ New best model saved at {CHECKPOINT_PATH}")
+        print(f"New best model saved at {CHECKPOINT_PATH}")
 
 print("Training complete.")

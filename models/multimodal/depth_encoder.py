@@ -14,6 +14,5 @@ class DepthEncoder(nn.Module):
         self.fc = nn.Linear(self.backbone.num_features, out_dim)
 
     def forward(self, x):
-        # Input: single-channel depth map (B, 1, 224, 224)
-        features = self.backbone.forward_features(x)  # (B, num_features)
-        return self.fc(features)                      # (B, out_dim)
+        features = self.backbone.forward_features(x)  
+        return self.fc(features)                     
