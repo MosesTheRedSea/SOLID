@@ -23,43 +23,49 @@ In this section you should provide instructions on how to use this repository to
 
 ```
 SOLID/
-├── configs
+├── configs                           # YAML configuration files for training
 │   └── baseline
-│      └── train_config.yaml
-├── data
-│   ├── dataset.py
-│   ├── dataset2.py
-│   └── depthdata.py
-├── models
-│   ├── baseline
-│   └── multimodal
-│       ├── classifier.py
-│       ├── depth_encoder.py
-│       ├── fusion.py
-│       ├── geometry_encoder.py
-│       ├── rgb_encoder.py
-│       └── solid_pipeline.py
-├── outputs
+│       └── train_config.yaml         # Baseline model training config
+
+├── data                              # Dataset loading and preprocessing modules
+│   ├── dataset.py                    # Main dataset handler
+│   ├── dataset2.py                   # Alternate dataset variation
+│   └── depthdata.py                  # Depth-specific dataset handling
+
+├── models                            # Model architectures
+│   ├── baseline                      # Placeholder for baseline model components
+│   └── multimodal                    # Multimodal model modules
+│       ├── classifier.py             # Final classification head
+│       ├── depth_encoder.py          # CNN encoder for depth input
+│       ├── fusion.py                 # Feature fusion strategies
+│       ├── geometry_encoder.py       # Encoder for 3D geometric features
+│       ├── rgb_encoder.py            # CNN encoder for RGB input
+│       └── solid_pipeline.py         # Full multimodal model pipeline
+
+├── outputs                           # Model results and logs
 │   └── results
 │       ├── baseline
-│       │   ├── cloud_results.txt
-│       │   ├── depth_results.txt
-│       │   └── rgb_results.txt
+│       │   ├── cloud_results.txt     # Point cloud model results
+│       │   ├── depth_results.txt     # Depth model results
+│       │   └── rgb_results.txt       # RGB model results
 │       └── multimodal
-│           └── solid_results.txt
-├── scripts
+│           └── solid_results.txt     # Multimodal fusion model results
+
+├── scripts                           # Training scripts and shared constants
 │   ├── baseline
-│   │   ├── train_cloud_baseline.py
-│   │   ├── train_depth_baseline.py
-│   │   └── train_rgb_baseline.py
-│   ├── constants.py
+│   │   ├── train_cloud_baseline.py   # Train baseline with point clouds
+│   │   ├── train_depth_baseline.py   # Train baseline with depth images
+│   │   └── train_rgb_baseline.py     # Train baseline with RGB images
+│   ├── constants.py                  # File paths and static config references
 │   └── multimodal
-│       └── train_solid.py
-├── utils
-│   └── visualization.py
-├── pyproject.toml
-├── solid_model_proposal.pdf
-└── solid_team_project_checkin.pdf
+│       └── train_solid.py            # Multimodal training entry point
+
+├── utils                             # Helper utilities and visualizations
+│   └── visualization.py              # Plot training metrics and graphs
+
+├── pyproject.toml                    # Project dependencies and metadata
+├── solid_model_proposal.pdf         # Model proposal document
+└── solid_team_project_checkin.pdf   # Team check-in submission
 ```
 
 ### Installation
