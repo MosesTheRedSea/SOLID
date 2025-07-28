@@ -91,7 +91,7 @@ source .venv/bin/activate
 
 ### train_config.yaml
 - This file controls training parameters and logging paths for each modality. Make sure the paths are valid on your machine
-- 
+
 ### Module Import Paths
 - Some training or evaluation scripts use internal modules. Add these paths at the top of your script to allow local imports
   ```bash
