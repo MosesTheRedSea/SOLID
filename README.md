@@ -74,7 +74,23 @@ Activate Python Virtual Environment
 source .venv/bin/activate
 ```
 
+## Configuration Setup
 
+### constants.py
+- Modify paths within this file to point to your SUNRGBD dataset and project directory
+
+### train_config.yaml
+- This file controls training parameters and logging paths for each modality. Make sure the paths are valid on your machine
+- 
+### Module Import Paths
+- Some training or evaluation scripts use internal modules. Add these paths at the top of your script to allow local imports
+  ```bash
+  import sys
+  sys.path.extend([
+      "/path/to/SOLID/models/multimodal/",
+      "/path/to/SOLID/data/"
+  ])
+  ```
 <!-- USAGE EXAMPLES -->
 ## Usage
 
