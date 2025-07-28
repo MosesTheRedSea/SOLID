@@ -35,6 +35,7 @@ EPOCHS = 200
 LEARNING_RATE = 1e-4
 CHECKPOINT_DIR = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/checkpoints/multimodal"
 BEST_MODEL_PATH = os.path.join(CHECKPOINT_DIR, "best_fusion_model.pt")
+RESULTS_DIR = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/results/multimodal"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -183,5 +184,13 @@ for epoch in range(start_epoch, EPOCHS):
     if is_best:
         torch.save(model.state_dict(), BEST_MODEL_PATH)
         print(f"🎉 New best model saved at {BEST_MODEL_PATH} with accuracy: {best_acc:.4f}")
+    
+    log_file = os.path.join(RESULTS_DIR, "solid_results.txt")
+    with open(log_file, "a") as f:
+        f.write(f"Epoch {epoch+1}:\n")
+        f.write(f"Train Acc: {train_acc:.4f}, Train F1: {train_f1:.4f}\n")
+        f.write(f"Test Acc: {test_acc:.4f}, Precision: {test_precision:.4f}, "
+                f"Recall: {test_recall:.4f}, F1: {test_f1:.4f}\n")
+        f.write("-" * 50 + "\n")
 
 print("\nTraining complete.")

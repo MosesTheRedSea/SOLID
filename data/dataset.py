@@ -23,8 +23,8 @@ from collections import Counter
 
 class SUNRGBDDataset(Dataset):
     def __init__(self, data_root, toolbox_root, split='train', num_points=1024,
-                 transform_rgb=None, transform_depth=None, transform_points=None,
-                 allowed_classes=None):
+             transform_rgb=None, transform_depth=None, transform_points=None,
+             allowed_classes=None):
         self.data_root = data_root
         self.num_points = num_points
         self.transform_rgb = transform_rgb
@@ -34,31 +34,20 @@ class SUNRGBDDataset(Dataset):
 
         print(f"[{split.upper()}] Loading metadata...")
         mat = sio.loadmat(SUNRGBD_3DBB_MAT, squeeze_me=True, struct_as_record=False)
-
         self.meta = mat['SUNRGBDMeta']
         print(f"→ {len(self.meta)} total samples in dataset")
 
+        # 1. Validate all samples & extract classes
+        MINSAMPLES = 20
         valid = []
+        label_counts = Counter()
+
         for i, sample in enumerate(self.meta):
             rgb_local = self._to_local(sample.rgbpath)
             depth_local = self._to_local(sample.depthpath)
-            if os.path.exists(rgb_local) and os.path.exists(depth_local):
-                valid.append(i)
-        print(f"→ {len(valid)} valid samples with RGB and depth")
-
-        cut = int(0.8 * len(valid))
-        if split == 'train':
-            self.sample_indices = valid[:cut]
-        elif split == 'test':
-            self.sample_indices = valid[cut:]
-        else:
-            raise ValueError("split must be 'train' or 'test'")
-        print(f"→ Using {len(self.sample_indices)} samples for {split}")
-
-        MINSAMPLES = 20
-        label_counts = Counter()
-        for i in self.sample_indices:
-            bbs = self.meta[i].groundtruth3DBB
+            if not (os.path.exists(rgb_local) and os.path.exists(depth_local)):
+                continue
+            bbs = sample.groundtruth3DBB
             if bbs is None or (isinstance(bbs, np.ndarray) and bbs.size == 0):
                 continue
             all_bbs = bbs if isinstance(bbs, np.ndarray) else [bbs]
@@ -67,26 +56,33 @@ class SUNRGBDDataset(Dataset):
             if isinstance(classname, np.ndarray):
                 classname = classname[0]
             label_counts[classname] += 1
+            valid.append((i, classname))
 
-        names = []
-        new_sample_indices = []
-        for i in self.sample_indices:
-            bbs = self.meta[i].groundtruth3DBB
-            if bbs is None or (isinstance(bbs, np.ndarray) and bbs.size == 0):
-                continue
-            all_bbs = bbs if isinstance(bbs, np.ndarray) else [bbs]
-            first = all_bbs[0]
-            classname = first.classname
-            if isinstance(classname, np.ndarray):
-                classname = classname[0]
-            if label_counts[classname] >= MINSAMPLES:
-                if self.allowed_classes is None or classname in self.allowed_classes:
-                    names.append(classname)
-                    new_sample_indices.append(i)
+        # 2. Keep only samples where class has enough instances
+        filtered = [(i, cls) for i, cls in valid if label_counts[cls] >= MINSAMPLES]
+        if self.allowed_classes is not None:
+            filtered = [(i, cls) for i, cls in filtered if cls in self.allowed_classes]
 
-        self.sample_indices = new_sample_indices
+        print(f"→ {len(filtered)} samples remaining after class frequency filtering (min {MINSAMPLES})")
+
+        # 3. Sort classes and build mapping
+        names = [cls for _, cls in filtered]
         self.classes = sorted(set(names))
         self.class_to_idx = {cls: idx for idx, cls in enumerate(self.classes)}
+
+        # 4. Split after filtering
+        np.random.seed(42)
+        np.random.shuffle(filtered)
+        cut = int(0.8 * len(filtered))
+        if split == 'train':
+            selected = filtered[:cut]
+        elif split == 'test':
+            selected = filtered[cut:]
+        else:
+            raise ValueError("split must be 'train' or 'test'")
+
+        self.sample_indices = [i for i, _ in selected]
+        print(f"→ Using {len(self.sample_indices)} samples for {split}")
         print(f"→ {len(self.classes)} classes after filtering (min {MINSAMPLES} samples)")
 
     def _to_local(self, full_path):

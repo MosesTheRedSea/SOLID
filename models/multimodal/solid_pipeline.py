@@ -18,11 +18,15 @@ class SolidFusionPipeline(nn.Module):
         self.classifier = ClassificationHead(in_dim=512 * 3, num_classes=num_classes)
 
     def forward(self, rgb, depth, pcl):
-        rgb_feat = self.rgb_encoder(rgb)       
-        depth_feat = self.depth_encoder(depth) 
-        geom_feat = self.geometry_encoder(pcl) 
+        rgb_feat = self.rgb_encoder(rgb)        
+        depth_feat = self.depth_encoder(depth)  
+        geom_feat = self.geometry_encoder(pcl)  
+
+        rgb_feat = nn.functional.normalize(rgb_feat, p=2, dim=1)
+        depth_feat = nn.functional.normalize(depth_feat, p=2, dim=1)
+        geom_feat = nn.functional.normalize(geom_feat, p=2, dim=1)
 
         fused = self.fusion([rgb_feat, depth_feat, geom_feat])  
-        logits = self.classifier(fused)  
+        logits = self.classifier(fused)                        
 
         return logits

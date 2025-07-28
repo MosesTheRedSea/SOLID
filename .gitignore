@@ -4,4 +4,5 @@ data/sunrgbd/
 uv.lock
 *.out
 *.pth
+*.pt
 *.txt
