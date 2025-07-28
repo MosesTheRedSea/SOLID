@@ -23,39 +23,47 @@ In this section you should provide instructions on how to use this repository to
 
 ```
 SOLID/
-├── main.py
-├── README.md
-├── pyproject.toml
-├── solid_model_proposal.pdf
-├── solid_team_project_checkin.pdf
+├── main.py                              # Entry point to the project (optional orchestrator script)
+├── README.md                            # Project documentation with setup, usage, and structure
+├── pyproject.toml                       # Python project metadata and dependency declarations
+├── solid_model_proposal.pdf            # Original proposal detailing project goals and design
+├── solid_team_project_checkin.pdf      # Mid-project check-in summary
+│
 ├── notebooks/
-│   └── analysis.ipynb
+│   └── analysis.ipynb                   # Jupyter notebook for experimental analysis and exploration
+│
 ├── data/
-│   └── dataset.py
+│   └── dataset.py                       # Custom PyTorch dataset implementation for SUNRGBD
+│
 ├── scripts/
 │   └── multimodal/
-│       └── train_solid.py
+│       └── train_solid.py              # Training script for the multimodal fusion model
+│
 ├── models/
-│   ├── multimodal/
-│   │   ├── rgb_encoder.py
-│   │   ├── depth_encoder.py
-│   │   ├── geometry_encoder.py
-│   │   ├── fusion.py
-│   │   ├── classifier.py
-│   │   └── solid_pipeline.py
+│   └── multimodal/
+│       ├── rgb_encoder.py              # CNN backbone (e.g., ResNet) for RGB input
+│       ├── depth_encoder.py            # CNN model for processing depth data
+│       ├── geometry_encoder.py         # DGCNN-based encoder for 3D point cloud input
+│       ├── fusion.py                   # Fusion logic combining RGB, depth, and point features
+│       ├── classifier.py               # Final classification head
+│       └── solid_pipeline.py           # End-to-end fusion model wrapper
+│
 ├── utils/
-│   ├── data_utils.py
-│   ├── training_utils.py
-│   ├── visualization.py
-│   └── model_utils.py
+│   ├── data_utils.py                   # Helper functions for loading and processing data
+│   ├── training_utils.py               # Training loop utilities (metrics, logging, etc.)
+│   ├── visualization.py                # Script to generate metric plots (loss, accuracy, etc.)
+│   └── model_utils.py                  # Utility functions for saving/loading models
+│
 ├── outputs/
 │   ├── checkpoints/
-│   │   └── multimodal/
+│   │   └── multimodal/                 # Saved model checkpoints (e.g., best model, epoch models)
 │   ├── results/
-│   │   └── multimodal/
-│   └── logs/
+│   │   └── multimodal/                 # Training/validation results for plotting
+│   └── logs/                           # Logging outputs (e.g., SLURM job logs)
+│
 ├── configs/
-│   └── multimodal/train_config.yaml
+│   └── multimodal/
+│       └── train_config.yaml           # YAML configuration for training parameters and paths
 ```
 
 ### Installation
