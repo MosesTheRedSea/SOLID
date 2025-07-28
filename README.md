@@ -25,7 +25,9 @@ In this section you should provide instructions on how to use this repository to
 SOLID/
 ├── configs
 │   ├── baseline
+│   │   └── train_config.yaml
 │   └── multimodal
+│       └── train_config.yaml
 ├── data
 │   ├── dataset.py
 │   ├── dataset2.py
@@ -39,6 +41,14 @@ SOLID/
 │       ├── geometry_encoder.py
 │       ├── rgb_encoder.py
 │       └── solid_pipeline.py
+├── outputs
+│   └── results
+│       ├── baseline
+│       │   ├── cloud_results.txt
+│       │   ├── depth_results.txt
+│       │   └── rgb_results.txt
+│       └── multimodal
+│           └── solid_results.txt
 ├── scripts
 │   ├── baseline
 │   │   ├── train_cloud_baseline.py
@@ -49,7 +59,13 @@ SOLID/
 │       ├── evaluate.py
 │       └── train_solid.py
 ├── utils
+│   ├── data_utils.py
+│   ├── model_utils.py
+│   ├── training_utils.py
 │   └── visualization.py
+├── pyproject.toml
+├── solid_model_proposal.pdf
+└── solid_team_project_checkin.pdf
 ```
 
 ### Installation
