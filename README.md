@@ -74,11 +74,11 @@ Clone the repo
    ```bash
    git clone https://github.com/MosesTheRedSea/SOLID.git
    ```
-Setup (and activate) your environment
+Setup Your Virtual Python Environment
   ```bash
- uv sync or uv run pyproject.toml
+ uv sync || uv run pyproject.toml
   ```
-Activate Python Virtual Environment
+Activate The Virtual Python Environment
 
 ```bash
 source .venv/bin/activate
