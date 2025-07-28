@@ -17,7 +17,7 @@
 
 
 <!-- GETTING STARTED -->
-## Getting Started
+## Code Structure
 
 In this section you should provide instructions on how to use this repository to recreate your project locally.
 
