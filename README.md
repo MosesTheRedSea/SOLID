@@ -103,7 +103,7 @@ source .venv/bin/activate
   ```
 <!-- USAGE EXAMPLES -->
 
-## Data Set 
+## DataSet 
 The SUN RGB-D dataset is a large-scale benchmark dataset designed for scene understanding from RGB-D images, combining both color (RGB) and depth modalities. It includes over 10,000 indoor scene images captured using four different RGB-D sensors: Kinect v1, Kinect v2, Intel RealSense, and Structure Sensor
 
 - Download the SUNRGBD RGB-D dataset
