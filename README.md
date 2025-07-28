@@ -161,11 +161,11 @@ python scripts/multimodal/train_solid.py
 
 ```bash
 if __name__ == "__main__":
-    # Uncomment to visualize baseline model performance
-    # graph_baseline()
+    # To visualize baseline model performance
+    graph_baseline()
 
-    # Uncomment to visualize SOLID multimodal model performance
-    # graph_multimodal()
+    # To visualize SOLID multimodal model performance
+    graph_multimodal()
 ```
 
 Then run
