@@ -23,47 +23,33 @@ In this section you should provide instructions on how to use this repository to
 
 ```
 SOLID/
-├── main.py                              # Entry point to the project (optional orchestrator script)
-├── README.md                            # Project documentation with setup, usage, and structure
-├── pyproject.toml                       # Python project metadata and dependency declarations
-├── solid_model_proposal.pdf            # Original proposal detailing project goals and design
-├── solid_team_project_checkin.pdf      # Mid-project check-in summary
-│
-├── notebooks/
-│   └── analysis.ipynb                   # Jupyter notebook for experimental analysis and exploration
-│
-├── data/
-│   └── dataset.py                       # Custom PyTorch dataset implementation for SUNRGBD
-│
-├── scripts/
-│   └── multimodal/
-│       └── train_solid.py              # Training script for the multimodal fusion model
-│
-├── models/
-│   └── multimodal/
-│       ├── rgb_encoder.py              # CNN backbone (e.g., ResNet) for RGB input
-│       ├── depth_encoder.py            # CNN model for processing depth data
-│       ├── geometry_encoder.py         # DGCNN-based encoder for 3D point cloud input
-│       ├── fusion.py                   # Fusion logic combining RGB, depth, and point features
-│       ├── classifier.py               # Final classification head
-│       └── solid_pipeline.py           # End-to-end fusion model wrapper
-│
-├── utils/
-│   ├── data_utils.py                   # Helper functions for loading and processing data
-│   ├── training_utils.py               # Training loop utilities (metrics, logging, etc.)
-│   ├── visualization.py                # Script to generate metric plots (loss, accuracy, etc.)
-│   └── model_utils.py                  # Utility functions for saving/loading models
-│
-├── outputs/
-│   ├── checkpoints/
-│   │   └── multimodal/                 # Saved model checkpoints (e.g., best model, epoch models)
-│   ├── results/
-│   │   └── multimodal/                 # Training/validation results for plotting
-│   └── logs/                           # Logging outputs (e.g., SLURM job logs)
-│
-├── configs/
-│   └── multimodal/
-│       └── train_config.yaml           # YAML configuration for training parameters and paths
+├── configs
+│   ├── baseline
+│   └── multimodal
+├── data
+│   ├── dataset.py
+│   ├── dataset2.py
+│   └── depthdata.py
+├── models
+│   ├── baseline
+│   └── multimodal
+│       ├── classifier.py
+│       ├── depth_encoder.py
+│       ├── fusion.py
+│       ├── geometry_encoder.py
+│       ├── rgb_encoder.py
+│       └── solid_pipeline.py
+├── scripts
+│   ├── baseline
+│   │   ├── train_cloud_baseline.py
+│   │   ├── train_depth_baseline.py
+│   │   └── train_rgb_baseline.py
+│   ├── constants.py
+│   └── multimodal
+│       ├── evaluate.py
+│       └── train_solid.py
+├── utils
+│   └── visualization.py
 ```
 
 ### Installation
