@@ -111,7 +111,7 @@ The SUN RGB-D dataset is a large-scale benchmark dataset designed for scene unde
 ```bash
 cd data
 
-mkdir -p sunrgbd && cd sunrgbd
+mkdir sunrgbd && cd sunrgbd
 
 curl -O http://rgbd.cs.princeton.edu/data/SUNRGBD.zip
 
