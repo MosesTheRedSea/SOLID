@@ -9,7 +9,6 @@ import numpy as np
 from torchvision import transforms
 import glob
 
-# Import additional metrics from scikit-learn
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
@@ -17,6 +16,8 @@ from sklearn.metrics import (
     recall_score,
     confusion_matrix
 )
+
+from sklearn.utils.class_weight import compute_class_weight
 
 sys.path.extend([
     "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/models/multimodal/",
@@ -27,7 +28,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"
 from solid_pipeline import SolidFusionPipeline
 from dataset import SUNRGBDDataset
 
-# --- Configuration ---
 SUNRGBD_DATA_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBD"
 SUNRGBD_TOOLBOX_ROOT = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/data/sunrgbd/SUNRGBDtoolbox"
 BATCH_SIZE = 8
@@ -39,7 +39,6 @@ RESULTS_DIR = "/home/hice1/madewolu9/scratch/madewolu9/SOLID/SOLID/outputs/resul
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# --- Data Transformations ---
 class DepthTransform:
     def __init__(self, size=(224, 224)):
         self.size = size
@@ -62,7 +61,6 @@ transform_rgb = transforms.Compose([
 
 transform_depth = DepthTransform()
 
-# --- Datasets and Loaders ---
 train_dataset = SUNRGBDDataset(
     data_root=SUNRGBD_DATA_ROOT,
     toolbox_root=SUNRGBD_TOOLBOX_ROOT,
@@ -88,12 +86,10 @@ train_loader = DataLoader(
 )
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
-# --- Model, Optimizer, and Loss ---
 model = SolidFusionPipeline(num_classes=NUM_CLASSES).to(device)
 optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 criterion = nn.CrossEntropyLoss()
 
-# --- Checkpoint Loading ---
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 start_epoch = 0
 best_acc = 0.0
@@ -115,8 +111,8 @@ if ckpt_paths:
 else:
     print("No checkpoint found. Starting training from scratch.")
 
-# --- Training Loop ---
 for epoch in range(start_epoch, EPOCHS):
+    
     model.train()
     train_losses = []
     all_preds_train = []
@@ -140,10 +136,10 @@ for epoch in range(start_epoch, EPOCHS):
     train_f1 = f1_score(all_labels_train, all_preds_train, average='macro', zero_division=0)
     print(f"Epoch {epoch+1}/{EPOCHS} | Train Loss: {np.mean(train_losses):.4f}, Accuracy: {train_acc:.4f}, F1: {train_f1:.4f}")
 
-    # --- Evaluation with Additional Metrics ---
     model.eval()
     all_preds_test = []
     all_labels_test = []
+
     with torch.no_grad():
         for rgb, depth, pcl, labels, _ in test_loader:
             rgb, depth, pcl = rgb.to(device), depth.to(device), pcl.to(device)
@@ -152,7 +148,6 @@ for epoch in range(start_epoch, EPOCHS):
             all_preds_test.extend(preds.cpu().numpy())
             all_labels_test.extend(labels.numpy())
 
-    # Calculate all metrics
     test_acc = accuracy_score(all_labels_test, all_preds_test)
     test_precision = precision_score(all_labels_test, all_preds_test, average='macro', zero_division=0)
     test_recall = recall_score(all_labels_test, all_preds_test, average='macro', zero_division=0)
@@ -161,12 +156,12 @@ for epoch in range(start_epoch, EPOCHS):
 
     print(f"Test Metrics | Acc: {test_acc:.4f} | Precision: {test_precision:.4f} | Recall: {test_recall:.4f} | F1: {test_f1:.4f}")
 
-    # --- Checkpoint Saving ---
     is_best = test_acc > best_acc
     if is_best:
         best_acc = test_acc
 
     epoch_ckpt_path = os.path.join(CHECKPOINT_DIR, f"fusion_model_epoch_{epoch+1}.pt")
+
     torch.save({
         'epoch': epoch + 1,
         'model_state_dict': model.state_dict(),
@@ -183,7 +178,7 @@ for epoch in range(start_epoch, EPOCHS):
 
     if is_best:
         torch.save(model.state_dict(), BEST_MODEL_PATH)
-        print(f"🎉 New best model saved at {BEST_MODEL_PATH} with accuracy: {best_acc:.4f}")
+        print(f"New best model saved at {BEST_MODEL_PATH} with accuracy: {best_acc:.4f}")
     
     log_file = os.path.join(RESULTS_DIR, "solid_results.txt")
     with open(log_file, "a") as f:

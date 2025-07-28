@@ -6,3 +6,5 @@ uv.lock
 *.pth
 *.pt
 *.txt
+*.png
+*.jpg
