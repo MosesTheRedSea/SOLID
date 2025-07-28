@@ -103,7 +103,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/catiaspsilva/README-template/issues) for a list of proposed features (and known issues).
+<p align="center">
+  <img src="https://github.com/MosesTheRedSea/SOLID/blob/main/solid-pipeline.jpg" alt="solid-pipeline-roadmap" />
+</p>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -116,22 +118,3 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-
-<!-- Authors -->
-## Authors
-Moses Adewolu - [@MosesTheRedSea](https://twitter.com/MosesTheRedSea) [mosesoluwatobiadewolu@gmail.com](mosesoluwatobiadewolu@gmail.com)
-
-Project Link: [https://github.com/MosesTheRedSea/MNISTique.git](https://github.com/MosesTheRedSea/MNISTique.git)
-
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-You can acknowledge any individual, group, institution or service.
-* [Catia Silva](https://faculty.eng.ufl.edu/catia-silva/)
