@@ -92,20 +92,98 @@ source .venv/bin/activate
   ])
   ```
 <!-- USAGE EXAMPLES -->
+
+## Data Set 
+The SUN RGB-D dataset is a large-scale benchmark dataset designed for scene understanding from RGB-D images, combining both color (RGB) and depth modalities. It includes over 10,000 indoor scene images captured using four different RGB-D sensors: Kinect v1, Kinect v2, Intel RealSense, and Structure Sensor
+
+- Download the SUNRGBD RGB-D dataset
+  
+```bash
+cd data
+
+mkdir -p sunrgbd && cd sunrgbd
+
+curl -O http://rgbd.cs.princeton.edu/data/SUNRGBD.zip
+
+unzip SUNRGBD.zip -d SUNRGBD
+```
+
+- Download the SUNRGBDtoolbox
+
+```bash
+curl -O http://rgbd.cs.princeton.edu/data/SUNRGBDtoolbox.zip
+
+unzip SUNRGBDtoolbox.zip -d SUNRGBDtoolbox
+
+curl -O http://rgbd.cs.princeton.edu/data/SUNRGBDMeta2DBB_v2.mat
+
+curl -O http://rgbd.cs.princeton.edu/data/SUNRGBDMeta3DBB_v2.mat
+
+mv SUNRGBDMeta2DBB_v2.mat SUNRGBD/
+
+mv SUNRGBDMeta3DBB_v2.mat SUNRGBD/
+```
+
 ## Usage
 
-Use this space to show useful examples of how a project can be used. For course projects, include which file to execute and the format of any input variables.
+Train RGB Baseline (ResNet34)
 
-Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+```bash
+python scripts/baseline/train_rgb_baseline.py
+```
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+Train Depth Baseline  (ResNet34)
+
+```bash
+python scripts/baseline/train_depth_baseline.py
+```
+
+Train Point Cloud Baseline (DGCNN)
+
+```bash
+python scripts/baseline/train_cloud_baseline.py
+```
+
+### Training the SOLID Multimodal Fusion Model
+- To train the full fusion pipeline integrating RGB, depth, and geometry:
+
+```bash
+python scripts/multimodal/train_solid.py
+```
+
+### Visualizing Results
+
+- Open the visualization script
+
+```bash
+  utils/visualization.py
+```
+
+```bash
+if __name__ == "__main__":
+    # Uncomment to visualize baseline model performance
+    # graph_baseline()
+
+    # Uncomment to visualize SOLID multimodal model performance
+    # graph_multimodal()
+```
+
+Then run
+
+```bash
+python utils/visualization.py
+```
 
 <!-- ROADMAP -->
-## Roadmap
+## SOLID Architecture
 
 <p align="center">
   <img src="https://github.com/MosesTheRedSea/SOLID/blob/main/solid-pipeline.jpg" alt="solid-pipeline-roadmap" />
-</p>
+</p><br>
+
+  - RGB Images are passed through a CLIP Vision Transformer to extract high-level semantic features.
+  - Depth Images are processed using a Swin Transformer tailored for single-channel input, capturing spatial cues from scene geometry.
+  - 3D Point Clouds are encoded using DGCNN (Dynamic Graph CNN) to represent local geometric structures.
 
 <!-- CONTRIBUTING -->
 ## Contributing
