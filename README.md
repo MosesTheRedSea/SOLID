@@ -10,12 +10,10 @@
   <p align="center">
     <a href="https://github.com/catiaspsilva/README-template/blob/main/images/docs.txt"><strong>Documentaton</strong></a>
     <a href="https://github.com/catiaspsilva/README-template/issues">Report Bug</a>
-    <a href="https://github.com/catiaspsilva/README-template/issues">Add New Feature</a>
+    <a href="https://github.com/catiaspsilva/README-template/issues">Add New Feature</a><br><br>
+    SOLID is a modular deep learning framework for multimodal 3D object classification using RGB, depth, and point cloud geometry. It leverages pretrained transformers and point-based networks to integrate spatial cues across modalities. The goal is to improve object recognition in complex scenes using complementary representations.
   </p>
 </p>
-
-
-- SOLID is a modular deep learning framework for multimodal 3D object classification using RGB, depth, and point cloud geometry. It leverages pretrained transformers and point-based networks to integrate spatial cues across modalities. The goal is to improve object recognition in complex scenes using complementary representations.
 
 
 <!-- GETTING STARTED -->
