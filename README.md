@@ -14,14 +14,9 @@
   </p>
 </p>
 
-<!-- ABOUT THE PROJECT -->
-## Introduction
 
-- MNISTique V1 is a neural network project built for handwritten digit classification using the MNIST dataset. Designed as an educational and practical exploration of deep learning fundamentals, the project demonstrates how a feedforward neural network can effectively learn to identify digits (0–9) from grayscale 28x28 pixel images.
+- SOLID is a modular deep learning framework for multimodal 3D object classification using RGB, depth, and point cloud geometry. It leverages pretrained transformers and point-based networks to integrate spatial cues across modalities. The goal is to improve object recognition in complex scenes using complementary representations.
 
-[Here goes the title with hyperlink](https://github.com/catiaspsilva/README-template)
-
-You can include tables or images to summarize your results when and if appropriate.
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -65,43 +60,22 @@ SOLID/
 │   └── multimodal/train_config.yaml
 ```
 
-### Dependencies
-
-Here, list all libraries, packages and other dependencies that need to be installed to run your project. Include library versions and how they should be installed if a special requirement is needed.
-
-For example, this is how you would list them:
-* Transformers 4.8.0
-  ```sh
-  conda install -c conda-forge transformers
-  ```
-* OpenCV 4.5.2
-  ```sh
-  conda install -c conda-forge opencv
-  ```
-### Alternative: Export your Environment
-
-Alternatively, you can export your Python working environment, push it to your project's repository and allow users to clone it locally. This way, anyone can install it and they will have all dependencies needed. Here is how you export a copy of your Python environment:
-
-  ```sh
-  conda env export > requirements.yml
-  ```
-
-The user will be able to recreate it using:
-
-  ```sh
-  conda env create -f requirements.yml
-  ```
-
 ### Installation
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/catiaspsilva/README-template.git
+Clone the repo
+   ```bash
+   git clone https://github.com/MosesTheRedSea/SOLID.git
    ```
-2. Setup (and activate) your environment
-  ```sh
-  conda env create -f requirements.yml
+Setup (and activate) your environment
+  ```bash
+ uv sync or uv run pyproject.toml
   ```
+Activate Python Virtual Environment
+
+```bash
+source .venv/bin/activate
+```
+
 
 <!-- USAGE EXAMPLES -->
 ## Usage
