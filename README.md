@@ -24,10 +24,8 @@ In this section you should provide instructions on how to use this repository to
 ```
 SOLID/
 ├── configs
-│   ├── baseline
-│   │   └── train_config.yaml
-│   └── multimodal
-│       └── train_config.yaml
+│   └── baseline
+│      └── train_config.yaml
 ├── data
 │   ├── dataset.py
 │   ├── dataset2.py
@@ -56,12 +54,8 @@ SOLID/
 │   │   └── train_rgb_baseline.py
 │   ├── constants.py
 │   └── multimodal
-│       ├── evaluate.py
 │       └── train_solid.py
 ├── utils
-│   ├── data_utils.py
-│   ├── model_utils.py
-│   ├── training_utils.py
 │   └── visualization.py
 ├── pyproject.toml
 ├── solid_model_proposal.pdf
