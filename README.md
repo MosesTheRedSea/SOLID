@@ -139,11 +139,10 @@ python utils/visualization.py
 
 <!-- ROADMAP -->
 ## SOLID Architecture
-
+<!-- ROADMAP 
 <p align="center">
-  <img src="https://github.com/MosesTheRedSea/SOLID/blob/main/solid-pipeline.jpg" alt="solid-pipeline-roadmap" />
 </p><br>
-
+-->
   - RGB Images are passed through a CLIP Vision Transformer to extract high-level semantic features.
   - Depth Images are processed using a Swin Transformer tailored for single-channel input, capturing spatial cues from scene geometry.
   - 3D Point Clouds are encoded using DGCNN (Dynamic Graph CNN) to represent local geometric structures.
