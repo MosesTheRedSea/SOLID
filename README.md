@@ -64,8 +64,8 @@ SOLID/
 │   └── visualization.py              # Plot training metrics and graphs
 
 ├── pyproject.toml                    # Project dependencies and metadata
-├── solid_model_proposal.pdf         # Model proposal document
-└── solid_team_project_checkin.pdf   # Team check-in submission
+├── solid_model_proposal.pdf          # Model proposal document
+└── solid_team_project_checkin.pdf    # Team check-in submission
 ```
 
 ### Installation
